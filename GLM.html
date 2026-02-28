@@ -1,0 +1,3210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroSync - Agricultural Management Dashboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Reset & Variables */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Primary Colors */
+            --deep-forest-green: #1E4620;
+            --earthy-gray: #F4F4F4;
+            --action-orange: #E67E22;
+            --dark-charcoal: #2C3E50;
+            
+            /* Soil Colors */
+            --soil-dark: #3E2723;
+            --soil-medium: #5D4037;
+            --soil-light: #8D6E63;
+            --soil-pale: #D7CCC8;
+            
+            /* Wheat Color Palette */
+            --wheat-gold: #DAA520;
+            --wheat-golden: #F4D03F;
+            --wheat-amber: #FFC107;
+            --wheat-light: #FFF8DC;
+            --wheat-dark: #B8860B;
+            
+            /* Corn Color Palette */
+            --corn-green: #4CAF50;
+            --corn-lime: #8BC34A;
+            --corn-yellow: #C5E1A5;
+            --corn-dark: #388E3C;
+            --corn-pale: #DCEDC8;
+            
+            /* Tomato Color Palette */
+            --tomato-red: #E53935;
+            --tomato-crimson: #D32F2F;
+            --tomato-green: #66BB6A;
+            --tomato-orange: #FF6F00;
+            --tomato-light: #FFCDD2;
+            
+            /* Sunflower Color Palette */
+            --sunflower-yellow: #FFB300;
+            --sunflower-gold: #FFA000;
+            --sunflower-amber: #FF8F00;
+            --sunflower-brown: #6D4C41;
+            --sunflower-cream: #FFF9C4;
+            
+            /* Holographic Colors */
+            --holo-cyan: #00FFFF;
+            --holo-blue: #00D4FF;
+            --holo-teal: #00CED1;
+            --holo-purple: #9D4EDD;
+            
+            /* Neutral Colors */
+            --white: #FFFFFF;
+            --light-gray: #E8E8E8;
+            --medium-gray: #95A5A6;
+            
+            /* Shadows */
+            --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.12);
+            --shadow-strong: 0 8px 30px rgba(0, 0, 0, 0.16);
+            
+            /* Spacing */
+            --spacing-xs: 8px;
+            --spacing-sm: 12px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            --spacing-xxxl: 72px;
+        }
+
+        /* Base Styles with Soil Background */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4A3728 0%, #3E2723 25%, #5D4037 50%, #4A3728 75%, #3E2723 100%);
+            background-attachment: fixed;
+            position: relative;
+            color: var(--dark-charcoal);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Soil Texture Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(139, 115, 85, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(93, 64, 55, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Navigation Bar with Border */
+        .navbar {
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+            padding: var(--spacing-md) var(--spacing-xxl);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px solid var(--deep-forest-green);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--deep-forest-green);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--deep-forest-green), #4CAF50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xl);
+            list-style: none;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--dark-charcoal);
+            font-weight: 500;
+            font-size: 15px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            position: relative;
+        }
+
+        .nav-links li a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--action-orange);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links li a:hover::after {
+            width: 80%;
+        }
+
+        .nav-links li a:hover {
+            color: var(--deep-forest-green);
+        }
+
+        .nav-links li a.active {
+            background-color: var(--deep-forest-green);
+            color: var(--white);
+        }
+
+        .nav-links li a.active::after {
+            display: none;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            background-color: var(--earthy-gray);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: var(--action-orange);
+            color: var(--white);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 12px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, var(--deep-forest-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 18px;
+            cursor: pointer;
+            border: 3px solid var(--white);
+            box-shadow: var(--shadow-medium);
+            transition: all 0.3s ease;
+        }
+
+        .avatar:hover {
+            border-color: var(--action-orange);
+            transform: scale(1.05);
+        }
+
+        /* Main Content Container */
+        .main-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: var(--spacing-xxl);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero/Welcome Section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(30, 70, 32, 0.95) 0%, rgba(42, 92, 46, 0.95) 50%, rgba(30, 70, 32, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            padding: var(--spacing-xxxl) var(--spacing-xxl);
+            margin-bottom: var(--spacing-xxl);
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(230, 126, 34, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            flex: 1;
+            z-index: 1;
+        }
+
+        .hero-greeting {
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: 0.5px;
+        }
+
+        .hero-title {
+            font-size: 44px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            letter-spacing: -1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .hero-summary {
+            font-size: 18px;
+            opacity: 0.85;
+            max-width: 600px;
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.7;
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, var(--action-orange) 0%, #D35400 100%);
+            color: var(--white);
+            border: none;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            box-shadow: var(--shadow-medium);
+            transition: all 0.3s ease;
+        }
+
+        .primary-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: var(--spacing-xl);
+            z-index: 1;
+        }
+
+        .hero-stat {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            padding: var(--spacing-lg);
+            border-radius: 16px;
+            text-align: center;
+            min-width: 130px;
+        }
+
+        .hero-stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .hero-stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: var(--spacing-xxl);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .section-title i {
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--action-orange), #D35400);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* HOLOGRAPHIC 3D Farm Map Section - ONLY THIS SECTION */
+        .farm-map-section {
+            margin-bottom: var(--spacing-xxxl);
+        }
+
+        .farm-map-wrapper {
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(0, 50, 80, 0.3) 0%, rgba(0, 0, 0, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: var(--spacing-xxl);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 
+                0 20px 80px rgba(0, 255, 255, 0.2),
+                inset 0 0 100px rgba(0, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        /* Scanline Effect */
+        .farm-map-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 255, 255, 0.03) 0px,
+                rgba(0, 255, 255, 0.03) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Floating Particles */
+        .farm-map-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+            background-size: 100px 100px;
+            pointer-events: none;
+            z-index: 1;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .farm-map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+            z-index: 2;
+        }
+
+        .farm-map-title {
+            color: var(--white);
+        }
+
+        .farm-map-title h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: var(--spacing-xs);
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+            color: var(--holo-cyan);
+        }
+
+        .farm-map-title p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .farm-map-legend {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--white);
+            font-size: 13px;
+            font-weight: 500;
+            padding: var(--spacing-xs) var(--spacing-md);
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        .legend-wheat { background: var(--wheat-gold); color: var(--wheat-gold); }
+        .legend-corn { background: var(--corn-green); color: var(--corn-green); }
+        .legend-tomato { background: var(--tomato-red); color: var(--tomato-red); }
+        .legend-sunflower { background: var(--sunflower-yellow); color: var(--sunflower-yellow); }
+
+        /* 3D Holographic Farm Map */
+        .farm-map-container {
+            perspective: 1200px;
+            perspective-origin: 50% 40%;
+            position: relative;
+            z-index: 2;
+            padding: var(--spacing-xl);
+        }
+
+        .farm-map-3d {
+            transform-style: preserve-3d;
+            transform: rotateX(55deg) rotateZ(-45deg);
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: hologram-float 6s ease-in-out infinite;
+        }
+
+        @keyframes hologram-float {
+            0%, 100% { transform: rotateX(55deg) rotateZ(-45deg) translateY(0); }
+            50% { transform: rotateX(55deg) rotateZ(-45deg) translateY(-15px); }
+        }
+
+        /* Base Platform */
+        .farm-platform {
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            right: -20px;
+            top: -20px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(0, 212, 255, 0.02) 100%);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 
+                0 0 60px rgba(0, 255, 255, 0.3),
+                inset 0 0 60px rgba(0, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+
+        /* 3D Farm Grid */
+        .farm-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 3D Crop Block */
+        .crop-block {
+            position: relative;
+            aspect-ratio: 1;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .crop-block:hover {
+            transform: translateZ(30px) scale(1.1);
+        }
+
+        /* 3D Block Faces */
+        .crop-top {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform: translateZ(var(--block-height, 40px));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 
+                0 0 30px var(--block-color),
+                inset 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .crop-top::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+
+        .crop-top::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .crop-front {
+            position: absolute;
+            width: 100%;
+            height: var(--block-height, 40px);
+            bottom: 0;
+            left: 0;
+            transform-origin: bottom;
+            transform: rotateX(-90deg);
+            background: linear-gradient(180deg, var(--block-color-dark) 0%, rgba(0, 0, 0, 0.8) 100%);
+            opacity: 0.8;
+        }
+
+        .crop-side {
+            position: absolute;
+            width: var(--block-height, 40px);
+            height: 100%;
+            top: 0;
+            right: 0;
+            transform-origin: right;
+            transform: rotateY(90deg);
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, var(--block-color-dark) 100%);
+            opacity: 0.6;
+        }
+
+        /* Wheat Blocks */
+        .crop-block-wheat {
+            --block-color: rgba(218, 165, 32, 0.8);
+            --block-color-dark: rgba(184, 134, 11, 0.9);
+            --block-height: 45px;
+        }
+
+        .crop-block-wheat .crop-top {
+            background: linear-gradient(135deg, rgba(244, 208, 63, 0.9) 0%, rgba(218, 165, 32, 0.9) 100%);
+            box-shadow: 
+                0 0 40px rgba(218, 165, 32, 0.8),
+                inset 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .crop-block-wheat .crop-top i {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 32px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Corn Blocks */
+        .crop-block-corn {
+            --block-color: rgba(76, 175, 80, 0.8);
+            --block-color-dark: rgba(56, 142, 60, 0.9);
+            --block-height: 55px;
+        }
+
+        .crop-block-corn .crop-top {
+            background: linear-gradient(135deg, rgba(139, 195, 74, 0.9) 0%, rgba(76, 175, 80, 0.9) 100%);
+            box-shadow: 
+                0 0 40px rgba(76, 175, 80, 0.8),
+                inset 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .crop-block-corn .crop-top i {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 32px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tomato Blocks */
+        .crop-block-tomato {
+            --block-color: rgba(229, 57, 53, 0.8);
+            --block-color-dark: rgba(211, 47, 47, 0.9);
+            --block-height: 35px;
+        }
+
+        .crop-block-tomato .crop-top {
+            background: linear-gradient(135deg, rgba(229, 57, 53, 0.9) 0%, rgba(211, 47, 47, 0.9) 100%);
+            box-shadow: 
+                0 0 40px rgba(229, 57, 53, 0.8),
+                inset 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .crop-block-tomato .crop-top i {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 32px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sunflower Blocks */
+        .crop-block-sunflower {
+            --block-color: rgba(255, 179, 0, 0.8);
+            --block-color-dark: rgba(255, 143, 0, 0.9);
+            --block-height: 60px;
+        }
+
+        .crop-block-sunflower .crop-top {
+            background: linear-gradient(135deg, rgba(255, 179, 0, 0.9) 0%, rgba(255, 160, 0, 0.9) 100%);
+            box-shadow: 
+                0 0 40px rgba(255, 179, 0, 0.8),
+                inset 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .crop-block-sunflower .crop-top i {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 32px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Holographic Tooltip */
+        .holo-tooltip {
+            position: absolute;
+            bottom: calc(100% + 30px);
+            left: 50%;
+            transform: translateX(-50%) rotateX(-55deg) rotateZ(45deg);
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            padding: var(--spacing-lg);
+            border-radius: 16px;
+            min-width: 260px;
+            border: 2px solid var(--holo-cyan);
+            box-shadow: 
+                0 0 40px rgba(0, 255, 255, 0.5),
+                inset 0 0 40px rgba(0, 255, 255, 0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 100;
+            transform-style: preserve-3d;
+        }
+
+        .crop-block:hover .holo-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) rotateX(-55deg) rotateZ(45deg) translateZ(50px);
+        }
+
+        .holo-tooltip::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--holo-cyan), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        .tooltip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .tooltip-crop-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--holo-cyan);
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        }
+
+        .tooltip-crop-area {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+        }
+
+        .tooltip-status-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        .status-excellent {
+            background: linear-gradient(135deg, var(--holo-cyan), var(--holo-teal));
+        }
+
+        .status-good {
+            background: linear-gradient(135deg, #F39C12, #FFD699);
+        }
+
+        .tooltip-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+        }
+
+        .tooltip-stat {
+            text-align: center;
+            padding: var(--spacing-sm);
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .tooltip-stat-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .tooltip-stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--holo-cyan);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+        }
+
+        /* Map Scale */
+        .farm-map-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            color: var(--white);
+            position: relative;
+            z-index: 2;
+        }
+
+        .scale-info {
+            display: flex;
+            gap: var(--spacing-xl);
+        }
+
+        .scale-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .scale-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .scale-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--holo-cyan);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+        }
+
+        .map-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .map-action-btn {
+            background: rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: var(--holo-cyan);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            transition: all 0.3s ease;
+        }
+
+        .map-action-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Crop Sector - Full Width Row */
+        .crop-sector {
+            width: 100%;
+            margin-bottom: var(--spacing-xxxl);
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            transition: all 0.4s ease;
+        }
+
+        .crop-sector:hover {
+            transform: translateY(-4px);
+        }
+
+        /* Wheat Sector */
+        .crop-sector-wheat {
+            background: linear-gradient(135deg, 
+                rgba(218, 165, 32, 0.85) 0%, 
+                rgba(244, 208, 63, 0.75) 30%,
+                rgba(255, 193, 7, 0.7) 60%,
+                rgba(184, 134, 11, 0.85) 100%);
+            box-shadow: 
+                0 10px 50px rgba(218, 165, 32, 0.4),
+                inset 0 0 100px rgba(255, 255, 255, 0.1);
+        }
+
+        .crop-sector-wheat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://sfile.chatglm.cn/images-ppt/ce2fa2e1c9af.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            mix-blend-mode: overlay;
+        }
+
+        /* Corn Sector */
+        .crop-sector-corn {
+            background: linear-gradient(135deg, 
+                rgba(76, 175, 80, 0.85) 0%, 
+                rgba(139, 195, 74, 0.75) 30%,
+                rgba(197, 225, 165, 0.7) 60%,
+                rgba(56, 142, 60, 0.85) 100%);
+            box-shadow: 
+                0 10px 50px rgba(76, 175, 80, 0.4),
+                inset 0 0 100px rgba(255, 255, 255, 0.1);
+        }
+
+        .crop-sector-corn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://sfile.chatglm.cn/images-ppt/dfe15ae77229.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.12;
+            mix-blend-mode: overlay;
+        }
+
+        /* Tomato Sector */
+        .crop-sector-tomato {
+            background: linear-gradient(135deg, 
+                rgba(229, 57, 53, 0.85) 0%, 
+                rgba(211, 47, 47, 0.75) 30%,
+                rgba(102, 187, 106, 0.7) 60%,
+                rgba(255, 111, 0, 0.85) 100%);
+            box-shadow: 
+                0 10px 50px rgba(229, 57, 53, 0.4),
+                inset 0 0 100px rgba(255, 255, 255, 0.1);
+        }
+
+        .crop-sector-tomato::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://sfile.chatglm.cn/images-ppt/7d3cadce58f7.jpeg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.12;
+            mix-blend-mode: overlay;
+        }
+
+        /* Sunflower Sector */
+        .crop-sector-sunflower {
+            background: linear-gradient(135deg, 
+                rgba(255, 179, 0, 0.85) 0%, 
+                rgba(255, 160, 0, 0.75) 30%,
+                rgba(255, 143, 0, 0.7) 60%,
+                rgba(109, 76, 65, 0.85) 100%);
+            box-shadow: 
+                0 10px 50px rgba(255, 179, 0, 0.4),
+                inset 0 0 100px rgba(255, 255, 255, 0.1);
+        }
+
+        .crop-sector-sunflower::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://sfile.chatglm.cn/images-ppt/2b39abe8e855.jpeg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.12;
+            mix-blend-mode: overlay;
+        }
+
+        .crop-content {
+            position: relative;
+            z-index: 1;
+            padding: var(--spacing-xxxl) var(--spacing-xxl);
+            display: flex;
+            gap: var(--spacing-xxl);
+            align-items: center;
+        }
+
+        .crop-image-wrapper {
+            flex: 0 0 45%;
+            position: relative;
+        }
+
+        .crop-main-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 0 0 4px rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .crop-sector:hover .crop-main-image {
+            transform: scale(1.03) rotate(-1deg);
+            box-shadow: 
+                0 25px 70px rgba(0, 0, 0, 0.4),
+                0 0 0 6px rgba(255, 255, 255, 0.3);
+        }
+
+        .crop-info {
+            flex: 1;
+            color: var(--white);
+        }
+
+        .crop-header {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .crop-icon-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .crop-name {
+            font-size: 52px;
+            font-weight: 800;
+            margin-bottom: var(--spacing-sm);
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
+        }
+
+        .crop-area-badge {
+            font-size: 20px;
+            font-weight: 500;
+            opacity: 0.95;
+        }
+
+        .crop-stats-row {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .crop-stat-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: var(--spacing-lg);
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .crop-stat-box:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .crop-stat-icon {
+            font-size: 32px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .crop-stat-label {
+            font-size: 12px;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .crop-stat-value {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .crop-description {
+            font-size: 16px;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .crop-actions {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .crop-action-btn {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            color: var(--white);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: all 0.3s ease;
+        }
+
+        .crop-action-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .crop-action-btn.primary {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--dark-charcoal);
+        }
+
+        .crop-action-btn.primary:hover {
+            background: var(--white);
+        }
+
+        /* Dashboard Metrics Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xxl);
+        }
+
+        /* Metric Card - No Border Design */
+        .metric-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: var(--spacing-xl);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Soil Moisture Card */
+        .metric-card-soil::before {
+            background: linear-gradient(90deg, #8B7355, #D4C4A8);
+        }
+
+        .metric-card-soil {
+            box-shadow: 0 8px 40px rgba(139, 115, 85, 0.2);
+        }
+
+        .metric-card-soil:hover {
+            box-shadow: 0 15px 50px rgba(139, 115, 85, 0.3);
+        }
+
+        /* Crop Health Card */
+        .metric-card-health::before {
+            background: linear-gradient(90deg, #52B788, #B7E4C7);
+        }
+
+        .metric-card-health {
+            box-shadow: 0 8px 40px rgba(82, 183, 136, 0.2);
+        }
+
+        .metric-card-health:hover {
+            box-shadow: 0 15px 50px rgba(82, 183, 136, 0.3);
+        }
+
+        /* Weather Card */
+        .metric-card-weather::before {
+            background: linear-gradient(90deg, #4A90E2, #B3D9FF);
+        }
+
+        .metric-card-weather {
+            box-shadow: 0 8px 40px rgba(74, 144, 226, 0.2);
+        }
+
+        .metric-card-weather:hover {
+            box-shadow: 0 15px 50px rgba(74, 144, 226, 0.3);
+        }
+
+        /* Agenda Card */
+        .metric-card-agenda::before {
+            background: linear-gradient(90deg, #F39C12, #FFD699);
+        }
+
+        .metric-card-agenda {
+            box-shadow: 0 8px 40px rgba(243, 156, 18, 0.2);
+        }
+
+        .metric-card-agenda:hover {
+            box-shadow: 0 15px 50px rgba(243, 156, 18, 0.3);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .metric-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark-charcoal);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .metric-subtitle {
+            font-size: 13px;
+            color: var(--medium-gray);
+        }
+
+        .metric-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .metric-card-soil .metric-icon {
+            background: linear-gradient(135deg, #D4C4A8, #8B7355);
+            color: var(--white);
+        }
+
+        .metric-card-health .metric-icon {
+            background: linear-gradient(135deg, #B7E4C7, #52B788);
+            color: var(--white);
+        }
+
+        .metric-card-weather .metric-icon {
+            background: linear-gradient(135deg, #B3D9FF, #4A90E2);
+            color: var(--white);
+        }
+
+        .metric-card-agenda .metric-icon {
+            background: linear-gradient(135deg, #FFD699, #F39C12);
+            color: var(--white);
+        }
+
+        /* Soil Moisture Display */
+        .soil-moisture-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .soil-moisture-value {
+            font-size: 80px;
+            font-weight: 800;
+            color: #8B7355;
+            line-height: 1;
+        }
+
+        .soil-status {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background-color: rgba(82, 183, 136, 0.15);
+            color: var(--deep-forest-green);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .soil-details {
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--earthy-gray);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .soil-detail-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .soil-detail-label {
+            font-size: 12px;
+            color: var(--medium-gray);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .soil-detail-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-charcoal);
+        }
+
+        /* Crop Health Display */
+        .crop-health-display {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .crop-health-main {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xl);
+        }
+
+        .crop-health-percentage {
+            font-size: 76px;
+            font-weight: 800;
+            color: #52B788;
+            line-height: 1;
+        }
+
+        .crop-health-indicator {
+            flex: 1;
+        }
+
+        .indicator-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .indicator-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+
+        .indicator-dot.healthy {
+            background-color: #52B788;
+        }
+
+        .indicator-dot.warning {
+            background-color: #F39C12;
+        }
+
+        .indicator-dot.danger {
+            background-color: #E74C3C;
+        }
+
+        .indicator-text {
+            font-size: 15px;
+            color: var(--dark-charcoal);
+            font-weight: 500;
+        }
+
+        .crop-health-bar {
+            height: 12px;
+            background-color: var(--earthy-gray);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .crop-health-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #52B788, #95D5B2);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(82, 183, 136, 0.5);
+        }
+
+        /* Weather Forecast */
+        .weather-forecast {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .weather-day {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-md);
+            background: var(--earthy-gray);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .weather-day:hover {
+            background: #E3F2FD;
+            transform: translateX(4px);
+        }
+
+        .weather-day.today {
+            background: linear-gradient(135deg, #4A90E2, #5BA3F5);
+            color: var(--white);
+        }
+
+        .weather-day-name {
+            font-weight: 600;
+            min-width: 85px;
+        }
+
+        .weather-icon {
+            font-size: 32px;
+            color: #F39C12;
+        }
+
+        .weather-day.today .weather-icon {
+            color: var(--white);
+        }
+
+        .weather-temp {
+            display: flex;
+            gap: var(--spacing-sm);
+            font-size: 16px;
+        }
+
+        .weather-temp-high {
+            font-weight: 700;
+        }
+
+        .weather-temp-low {
+            opacity: 0.7;
+        }
+
+        /* Agenda List */
+        .agenda-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .agenda-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--earthy-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .agenda-item:hover {
+            background: #FFF5E6;
+            transform: translateX(6px);
+        }
+
+        .agenda-item.completed {
+            opacity: 0.6;
+        }
+
+        .agenda-item.completed .agenda-text {
+            text-decoration: line-through;
+        }
+
+        .agenda-checkbox {
+            width: 26px;
+            height: 26px;
+            border: 2px solid #F39C12;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .agenda-item.completed .agenda-checkbox {
+            background: linear-gradient(135deg, #52B788, #95D5B2);
+            border-color: #52B788;
+            color: var(--white);
+        }
+
+        .agenda-text {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .agenda-time {
+            font-size: 12px;
+            color: var(--medium-gray);
+            font-weight: 500;
+        }
+
+        .agenda-item.completed .agenda-time {
+            color: #52B788;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--spacing-xl);
+            }
+
+            .hero-content {
+                text-align: center;
+            }
+
+            .hero-summary {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-stats {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .crop-content {
+                flex-direction: column;
+            }
+
+            .crop-image-wrapper {
+                flex: none;
+                width: 100%;
+            }
+
+            .crop-main-image {
+                height: 350px;
+            }
+
+            .crop-info {
+                width: 100%;
+            }
+
+            .farm-map-header {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .farm-map-3d {
+                transform: rotateX(45deg) rotateZ(-45deg);
+            }
+
+            @keyframes hologram-float {
+                0%, 100% { transform: rotateX(45deg) rotateZ(-45deg) translateY(0); }
+                50% { transform: rotateX(45deg) rotateZ(-45deg) translateY(-10px); }
+            }
+        }
+
+        @media (max-width: 992px) {
+            .navbar {
+                padding: var(--spacing-md) var(--spacing-lg);
+            }
+
+            .main-content {
+                padding: var(--spacing-lg);
+            }
+
+            .crop-name {
+                font-size: 40px;
+            }
+
+            .crop-stats-row {
+                flex-wrap: wrap;
+            }
+
+            .crop-stat-box {
+                flex: 1 1 45%;
+            }
+
+            .farm-grid {
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: var(--spacing-md);
+                padding: var(--spacing-md);
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: space-around;
+                flex-wrap: wrap;
+            }
+
+            .hero-section {
+                padding: var(--spacing-lg);
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .crop-content {
+                padding: var(--spacing-xl) var(--spacing-lg);
+            }
+
+            .crop-main-image {
+                height: 280px;
+            }
+
+            .crop-name {
+                font-size: 36px;
+            }
+
+            .crop-stats-row {
+                flex-direction: column;
+            }
+
+            .crop-stat-box {
+                width: 100%;
+            }
+
+            .crop-actions {
+                flex-direction: column;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .soil-moisture-value {
+                font-size: 60px;
+            }
+
+            .crop-health-percentage {
+                font-size: 56px;
+            }
+
+            .farm-grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+            }
+
+            .farm-map-3d {
+                transform: rotateX(35deg) rotateZ(-35deg);
+            }
+
+            @keyframes hologram-float {
+                0%, 100% { transform: rotateX(35deg) rotateZ(-35deg) translateY(0); }
+                50% { transform: rotateX(35deg) rotateZ(-35deg) translateY(-8px); }
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links li a span {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .crop-name {
+                font-size: 32px;
+            }
+
+            .crop-main-image {
+                height: 220px;
+            }
+
+            .farm-map-legend {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="material-icons logo-icon">agriculture</i>
+            AgroSync
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="#" class="active"><i class="material-icons">dashboard</i><span>Dashboard</span></a></li>
+            <li><a href="#"><i class="material-icons">eco</i><span>Crops</span></a></li>
+            <li><a href="#"><i class="material-icons">assignment</i><span>Tasks</span></a></li>
+            <li><a href="#"><i class="material-icons">assessment</i><span>Reports</span></a></li>
+        </ul>
+        
+        <div class="user-profile">
+            <div class="notification-bell">
+                <i class="material-icons">notifications</i>
+                <span class="notification-badge">3</span>
+            </div>
+            <div class="avatar">JD</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero/Welcome Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <p class="hero-greeting">Good morning, John</p>
+                <h1 class="hero-title">Welcome back to AgroSync</h1>
+                <p class="hero-summary">
+                    Your farm is performing excellently today. All systems are operational and your crops are thriving. Monitor your agricultural metrics and stay ahead with real-time insights.
+                </p>
+                <button class="primary-button">
+                    <i class="material-icons">add_circle</i>
+                    Log New Yield
+                </button>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-number">24</div>
+                    <div class="hero-stat-label">Active Fields</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-number">156</div>
+                    <div class="hero-stat-label">Acres Total</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3D Holographic Farm Map Section -->
+        <section class="farm-map-section">
+            <div class="farm-map-wrapper">
+                <div class="farm-map-header">
+                    <div class="farm-map-title">
+                        <h2>3D Farm Overview - 150m × 150m</h2>
+                        <p>Holographic crop distribution model • Hover over blocks for details</p>
+                    </div>
+                    <div class="farm-map-legend">
+                        <div class="legend-item">
+                            <div class="legend-color legend-wheat"></div>
+                            <span>Wheat</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-corn"></div>
+                            <span>Corn</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-tomato"></div>
+                            <span>Tomatoes</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-sunflower"></div>
+                            <span>Sunflowers</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D Holographic Map Container -->
+                <div class="farm-map-container">
+                    <div class="farm-map-3d">
+                        <div class="farm-platform"></div>
+                        
+                        <!-- 3D Farm Grid -->
+                        <div class="farm-grid">
+                            <!-- Row 1 -->
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block A-1 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">98%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">3.5t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">10d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block A-2 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">96%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">3.2t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">12d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-corn">
+                                <div class="crop-top"><i class="material-icons">spa</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sweet Corn</div>
+                                            <div class="tooltip-crop-area">Block D-1 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">94%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">9.2t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">42d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-corn">
+                                <div class="crop-top"><i class="material-icons">spa</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sweet Corn</div>
+                                            <div class="tooltip-crop-area">Block D-2 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">89%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">8.1t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">48d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-sunflower">
+                                <div class="crop-top"><i class="material-icons">local_florist</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sunflowers</div>
+                                            <div class="tooltip-crop-area">Block H-1 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">95%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">3.0t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">18d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-sunflower">
+                                <div class="crop-top"><i class="material-icons">local_florist</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sunflowers</div>
+                                            <div class="tooltip-crop-area">Block H-2 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">93%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.8t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">22d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 2 -->
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block B-1 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">92%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.9t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">14d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block B-2 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">97%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">3.4t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">11d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-corn">
+                                <div class="crop-top"><i class="material-icons">spa</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sweet Corn</div>
+                                            <div class="tooltip-crop-area">Block E-1 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">92%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">8.8t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">44d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-corn">
+                                <div class="crop-top"><i class="material-icons">spa</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sweet Corn</div>
+                                            <div class="tooltip-crop-area">Block E-2 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">88%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">7.8t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">50d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-tomato">
+                                <div class="crop-top"><i class="material-icons">eco</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Roma Tomatoes</div>
+                                            <div class="tooltip-crop-area">Block G-1 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">90%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">58t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">6d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-tomato">
+                                <div class="crop-top"><i class="material-icons">eco</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Roma Tomatoes</div>
+                                            <div class="tooltip-crop-area">Block G-2 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">86%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">52t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">10d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 3 -->
+                            <div class="crop-block crop-block-corn">
+                                <div class="crop-top"><i class="material-icons">spa</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sweet Corn</div>
+                                            <div class="tooltip-crop-area">Block F-1 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">91%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">8.5t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">45d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-corn">
+                                <div class="crop-top"><i class="material-icons">spa</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sweet Corn</div>
+                                            <div class="tooltip-crop-area">Block F-2 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">93%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">9.0t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">43d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-tomato">
+                                <div class="crop-top"><i class="material-icons">eco</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Roma Tomatoes</div>
+                                            <div class="tooltip-crop-area">Block G-3 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">87%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">54t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">9d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block C-1 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">95%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">3.1t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">13d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block C-2 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">90%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.8t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">15d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-sunflower">
+                                <div class="crop-top"><i class="material-icons">local_florist</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sunflowers</div>
+                                            <div class="tooltip-crop-area">Block H-3 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">94%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.9t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">20d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 4 -->
+                            <div class="crop-block crop-block-corn">
+                                <div class="crop-top"><i class="material-icons">spa</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sweet Corn</div>
+                                            <div class="tooltip-crop-area">Block F-3 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">88%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">8.0t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">47d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-tomato">
+                                <div class="crop-top"><i class="material-icons">eco</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Roma Tomatoes</div>
+                                            <div class="tooltip-crop-area">Block G-4 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">92%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">60t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">5d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block C-3 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">96%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">3.3t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">12d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-sunflower">
+                                <div class="crop-top"><i class="material-icons">local_florist</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sunflowers</div>
+                                            <div class="tooltip-crop-area">Block H-4 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">95%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.7t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">21d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-sunflower">
+                                <div class="crop-top"><i class="material-icons">local_florist</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sunflowers</div>
+                                            <div class="tooltip-crop-area">Block H-5 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">91%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.6t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">23d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-sunflower">
+                                <div class="crop-top"><i class="material-icons">local_florist</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sunflowers</div>
+                                            <div class="tooltip-crop-area">Block H-6 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">93%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.8t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">19d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 5 -->
+                            <div class="crop-block crop-block-tomato">
+                                <div class="crop-top"><i class="material-icons">eco</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Roma Tomatoes</div>
+                                            <div class="tooltip-crop-area">Block G-5 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">85%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">50t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">11d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block C-4 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">89%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.7t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">16d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block C-5 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">94%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">3.0t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">13d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-sunflower">
+                                <div class="crop-top"><i class="material-icons">local_florist</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sunflowers</div>
+                                            <div class="tooltip-crop-area">Block H-7 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">94%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.9t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">18d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block C-6 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">97%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">3.4t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">11d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block C-7 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">91%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.9t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">14d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 6 -->
+                            <div class="crop-block crop-block-wheat">
+                                <div class="crop-top"><i class="material-icons">grain</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Golden Wheat</div>
+                                            <div class="tooltip-crop-area">Block A-8 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">95%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">3.2t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">12d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-corn">
+                                <div class="crop-top"><i class="material-icons">spa</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sweet Corn</div>
+                                            <div class="tooltip-crop-area">Block F-4 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">90%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">8.6t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">46d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-corn">
+                                <div class="crop-top"><i class="material-icons">spa</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sweet Corn</div>
+                                            <div class="tooltip-crop-area">Block F-5 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">92%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">8.9t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">44d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-tomato">
+                                <div class="crop-top"><i class="material-icons">eco</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Roma Tomatoes</div>
+                                            <div class="tooltip-crop-area">Block G-6 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">89%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">56t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">7d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-tomato">
+                                <div class="crop-top"><i class="material-icons">eco</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Roma Tomatoes</div>
+                                            <div class="tooltip-crop-area">Block G-7 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-good">Good</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">84%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">48t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">12d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="crop-block crop-block-sunflower">
+                                <div class="crop-top"><i class="material-icons">local_florist</i></div>
+                                <div class="crop-front"></div>
+                                <div class="crop-side"></div>
+                                <div class="holo-tooltip">
+                                    <div class="tooltip-header">
+                                        <div>
+                                            <div class="tooltip-crop-name">Sunflowers</div>
+                                            <div class="tooltip-crop-area">Block H-8 • 6.25 ha</div>
+                                        </div>
+                                        <div class="tooltip-status-badge status-excellent">Excellent</div>
+                                    </div>
+                                    <div class="tooltip-stats">
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Health</div>
+                                            <div class="tooltip-stat-value">92%</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Yield</div>
+                                            <div class="tooltip-stat-value">2.7t</div>
+                                        </div>
+                                        <div class="tooltip-stat">
+                                            <div class="tooltip-stat-label">Ready</div>
+                                            <div class="tooltip-stat-value">20d</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Scale -->
+                <div class="farm-map-scale">
+                    <div class="scale-info">
+                        <div class="scale-item">
+                            <span class="scale-label">Total Area:</span>
+                            <span class="scale-value">22,500 m²</span>
+                        </div>
+                        <div class="scale-item">
+                            <span class="scale-label">Cell Size:</span>
+                            <span class="scale-value">25m × 25m</span>
+                        </div>
+                        <div class="scale-item">
+                            <span class="scale-label">Grid:</span>
+                            <span class="scale-value">6 × 6</span>
+                        </div>
+                    </div>
+                    <div class="map-actions">
+                        <button class="map-action-btn">
+                            <i class="material-icons">3d_rotation</i>
+                            Rotate
+                        </button>
+                        <button class="map-action-btn">
+                            <i class="material-icons">zoom_in</i>
+                            Zoom
+                        </button>
+                        <button class="map-action-btn">
+                            <i class="material-icons">download</i>
+                            Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Title -->
+        <h2 class="section-title">
+            <i class="material-icons">view_agenda</i>
+            Crop Management Overview
+        </h2>
+
+        <!-- Wheat Crop Sector -->
+        <section class="crop-sector crop-sector-wheat">
+            <div class="crop-content">
+                <div class="crop-image-wrapper">
+                    <img src="https://sfile.chatglm.cn/images-ppt/ce2fa2e1c9af.jpg" alt="Golden Wheat Field" class="crop-main-image">
+                </div>
+                <div class="crop-info">
+                    <div class="crop-header">
+                        <div class="crop-icon-badge">
+                            <i class="material-icons">grain</i>
+                            Harvest Ready
+                        </div>
+                        <h3 class="crop-name">Golden Wheat</h3>
+                        <p class="crop-area-badge">Block A-C • 42 Acres</p>
+                    </div>
+                    <div class="crop-stats-row">
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">favorite</i>
+                            <div class="crop-stat-label">Health Score</div>
+                            <div class="crop-stat-value">96%</div>
+                        </div>
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">trending_up</i>
+                            <div class="crop-stat-label">Yield Estimate</div>
+                            <div class="crop-stat-value">3.2t/ha</div>
+                        </div>
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">schedule</i>
+                            <div class="crop-stat-label">Days to Harvest</div>
+                            <div class="crop-stat-value">12</div>
+                        </div>
+                    </div>
+                    <p class="crop-description">
+                        Premium golden wheat approaching optimal harvest window. Current moisture levels at 13.5%, ideal for storage. NDVI readings show excellent canopy development with minimal pest pressure detected.
+                    </p>
+                    <div class="crop-actions">
+                        <button class="crop-action-btn primary">
+                            <i class="material-icons">play_arrow</i>
+                            Schedule Harvest
+                        </button>
+                        <button class="crop-action-btn">
+                            <i class="material-icons">assessment</i>
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Corn Crop Sector -->
+        <section class="crop-sector crop-sector-corn">
+            <div class="crop-content">
+                <div class="crop-image-wrapper">
+                    <img src="https://sfile.chatglm.cn/images-ppt/dfe15ae77229.jpg" alt="Lush Corn Field" class="crop-main-image">
+                </div>
+                <div class="crop-info">
+                    <div class="crop-header">
+                        <div class="crop-icon-badge">
+                            <i class="material-icons">spa</i>
+                            Growth Stage
+                        </div>
+                        <h3 class="crop-name">Sweet Corn</h3>
+                        <p class="crop-area-badge">Block D-F • 58 Acres</p>
+                    </div>
+                    <div class="crop-stats-row">
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">favorite</i>
+                            <div class="crop-stat-label">Health Score</div>
+                            <div class="crop-stat-value">91%</div>
+                        </div>
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">trending_up</i>
+                            <div class="crop-stat-label">Yield Estimate</div>
+                            <div class="crop-stat-value">8.5t/ha</div>
+                        </div>
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">schedule</i>
+                            <div class="crop-stat-label">Days to Harvest</div>
+                            <div class="crop-stat-value">45</div>
+                        </div>
+                    </div>
+                    <p class="crop-description">
+                        Vibrant corn fields at tasseling stage with exceptional nitrogen uptake. Current leaf area index optimal for maximum photosynthesis. Predicted above-average yields based on current growth trajectory.
+                    </p>
+                    <div class="crop-actions">
+                        <button class="crop-action-btn primary">
+                            <i class="material-icons">water_drop</i>
+                            Irrigation Plan
+                        </button>
+                        <button class="crop-action-btn">
+                            <i class="material-icons">assessment</i>
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tomato Crop Sector -->
+        <section class="crop-sector crop-sector-tomato">
+            <div class="crop-content">
+                <div class="crop-image-wrapper">
+                    <img src="https://sfile.chatglm.cn/images-ppt/7d3cadce58f7.jpeg" alt="Ripe Tomatoes on Vine" class="crop-main-image">
+                </div>
+                <div class="crop-info">
+                    <div class="crop-header">
+                        <div class="crop-icon-badge">
+                            <i class="material-icons">eco</i>
+                            Ripening Phase
+                        </div>
+                        <h3 class="crop-name">Roma Tomatoes</h3>
+                        <p class="crop-area-badge">Block G • 28 Acres</p>
+                    </div>
+                    <div class="crop-stats-row">
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">favorite</i>
+                            <div class="crop-stat-label">Health Score</div>
+                            <div class="crop-stat-value">88%</div>
+                        </div>
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">trending_up</i>
+                            <div class="crop-stat-label">Yield Estimate</div>
+                            <div class="crop-stat-value">55t/ha</div>
+                        </div>
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">schedule</i>
+                            <div class="crop-stat-label">Days to Harvest</div>
+                            <div class="crop-stat-value">8</div>
+                        </div>
+                    </div>
+                    <p class="crop-description">
+                        Roma tomatoes showing uniform ripening across the field. Brix levels at 6.2% indicating premium quality. Drip irrigation optimized for final fruit development stage.
+                    </p>
+                    <div class="crop-actions">
+                        <button class="crop-action-btn primary">
+                            <i class="material-icons">inventory_2</i>
+                            Prepare Harvest
+                        </button>
+                        <button class="crop-action-btn">
+                            <i class="material-icons">assessment</i>
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sunflower Crop Sector -->
+        <section class="crop-sector crop-sector-sunflower">
+            <div class="crop-content">
+                <div class="crop-image-wrapper">
+                    <img src="https://sfile.chatglm.cn/images-ppt/2b39abe8e855.jpeg" alt="Bright Sunflower Field" class="crop-main-image">
+                </div>
+                <div class="crop-info">
+                    <div class="crop-header">
+                        <div class="crop-icon-badge">
+                            <i class="material-icons">local_florist</i>
+                            Blooming Stage
+                        </div>
+                        <h3 class="crop-name">Sunflowers</h3>
+                        <p class="crop-area-badge">Block H • 28 Acres</p>
+                    </div>
+                    <div class="crop-stats-row">
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">favorite</i>
+                            <div class="crop-stat-label">Health Score</div>
+                            <div class="crop-stat-value">94%</div>
+                        </div>
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">trending_up</i>
+                            <div class="crop-stat-label">Yield Estimate</div>
+                            <div class="crop-stat-value">2.8t/ha</div>
+                        </div>
+                        <div class="crop-stat-box">
+                            <i class="material-icons crop-stat-icon">schedule</i>
+                            <div class="crop-stat-label">Days to Harvest</div>
+                            <div class="crop-stat-value">20</div>
+                        </div>
+                    </div>
+                    <p class="crop-description">
+                        Spectacular sunflower bloom in progress with optimal head development. Oil content projections at 48%, meeting premium market standards. Bee activity excellent for maximum pollination.
+                    </p>
+                    <div class="crop-actions">
+                        <button class="crop-action-btn primary">
+                            <i class="material-icons">visibility</i>
+                            Monitor Bloom
+                        </button>
+                        <button class="crop-action-btn">
+                            <i class="material-icons">assessment</i>
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Metrics Grid -->
+        <section class="dashboard-grid">
+            <!-- Metric Card: Soil Moisture -->
+            <article class="metric-card metric-card-soil">
+                <div class="metric-header">
+                    <div>
+                        <h3 class="metric-title">Soil Moisture</h3>
+                        <p class="metric-subtitle">Updated 5 min ago</p>
+                    </div>
+                    <div class="metric-icon">
+                        <i class="material-icons">water_drop</i>
+                    </div>
+                </div>
+                <div class="soil-moisture-display">
+                    <div class="soil-moisture-value">68%</div>
+                    <div class="soil-status">
+                        <i class="material-icons" style="font-size: 20px;">check_circle</i>
+                        Optimal
+                    </div>
+                </div>
+                <div class="soil-details">
+                    <div class="soil-detail-item">
+                        <div class="soil-detail-label">Temp</div>
+                        <div class="soil-detail-value">22°C</div>
+                    </div>
+                    <div class="soil-detail-item">
+                        <div class="soil-detail-label">pH Level</div>
+                        <div class="soil-detail-value">6.8</div>
+                    </div>
+                    <div class="soil-detail-item">
+                        <div class="soil-detail-label">EC</div>
+                        <div class="soil-detail-value">1.2</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Metric Card: Crop Health -->
+            <article class="metric-card metric-card-health">
+                <div class="metric-header">
+                    <div>
+                        <h3 class="metric-title">Overall Crop Health</h3>
+                        <p class="metric-subtitle">Based on satellite imagery</p>
+                    </div>
+                    <div class="metric-icon">
+                        <i class="material-icons">trending_up</i>
+                    </div>
+                </div>
+                <div class="crop-health-display">
+                    <div class="crop-health-main">
+                        <div class="crop-health-percentage">92%</div>
+                        <div class="crop-health-indicator">
+                            <div class="indicator-item">
+                                <span class="indicator-dot healthy"></span>
+                                <span class="indicator-text">92% Healthy</span>
+                            </div>
+                            <div class="indicator-item">
+                                <span class="indicator-dot warning"></span>
+                                <span class="indicator-text">6% Needs Attention</span>
+                            </div>
+                            <div class="indicator-item">
+                                <span class="indicator-dot danger"></span>
+                                <span class="indicator-text">2% Critical</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="crop-health-bar">
+                        <div class="crop-health-bar-fill" style="width: 92%;"></div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Metric Card: Weather Forecast -->
+            <article class="metric-card metric-card-weather">
+                <div class="metric-header">
+                    <div>
+                        <h3 class="metric-title">Weather Forecast</h3>
+                        <p class="metric-subtitle">3-Day Overview</p>
+                    </div>
+                    <div class="metric-icon">
+                        <i class="material-icons">wb_sunny</i>
+                    </div>
+                </div>
+                <div class="weather-forecast">
+                    <div class="weather-day today">
+                        <span class="weather-day-name">Today</span>
+                        <i class="material-icons weather-icon">wb_sunny</i>
+                        <div class="weather-temp">
+                            <span class="weather-temp-high">28°C</span>
+                            <span class="weather-temp-low">18°C</span>
+                        </div>
+                    </div>
+                    <div class="weather-day">
+                        <span class="weather-day-name">Tomorrow</span>
+                        <i class="material-icons weather-icon">cloud</i>
+                        <div class="weather-temp">
+                            <span class="weather-temp-high">25°C</span>
+                            <span class="weather-temp-low">16°C</span>
+                        </div>
+                    </div>
+                    <div class="weather-day">
+                        <span class="weather-day-name">Wednesday</span>
+                        <i class="material-icons weather-icon">water_drop</i>
+                        <div class="weather-temp">
+                            <span class="weather-temp-high">22°C</span>
+                            <span class="weather-temp-low">14°C</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Metric Card: Daily Agenda -->
+            <article class="metric-card metric-card-agenda">
+                <div class="metric-header">
+                    <div>
+                        <h3 class="metric-title">Daily Agenda</h3>
+                        <p class="metric-subtitle">2 pending tasks</p>
+                    </div>
+                    <div class="metric-icon">
+                        <i class="material-icons">event_note</i>
+                    </div>
+                </div>
+                <div class="agenda-list">
+                    <div class="agenda-item">
+                        <div class="agenda-checkbox"></div>
+                        <span class="agenda-text">Irrigate Sector A</span>
+                        <span class="agenda-time">08:00 AM</span>
+                    </div>
+                    <div class="agenda-item completed">
+                        <div class="agenda-checkbox">
+                            <i class="material-icons" style="font-size: 20px;">check</i>
+                        </div>
+                        <span class="agenda-text">Apply Fertilizer</span>
+                        <span class="agenda-time">Completed</span>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-checkbox"></div>
+                        <span class="agenda-text">Inspect Irrigation System</span>
+                        <span class="agenda-time">02:00 PM</span>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-checkbox"></div>
+                        <span class="agenda-text">Harvest Tomatoes - Block 7</span>
+                        <span class="agenda-time">04:00 PM</span>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+</body>
+</html>
